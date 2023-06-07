@@ -27,6 +27,7 @@ app.layout = html.Div(
         'background-color': 'rgba(18, 18, 18)',
         'height': '100vh',
         'outline': 'rgba(18, 18, 18)',
+        'border': 'none'
 
     },
     children=[
@@ -84,6 +85,7 @@ app.layout = html.Div(
                     id='button_input',
                     className="search-button",
                 ),
+                html.Label("Need help? Click here and look up the company's name", style={'color': 'rgba(223, 223, 223)'}),
                 html.A(
                     html.Label("https://finance.yahoo.com/lookup", className="link-label"),
                     href='https://finance.yahoo.com/lookup',
@@ -97,7 +99,7 @@ app.layout = html.Div(
                     type="circle",
                     style={'marginTop': '40px'},
                     children=[
-                        html.Div(id='year-container', className="graph-container"),
+                        html.Div(id='year-container', className="graph-container", style={'marginTop': '25px'}),
                         html.Div(id='prediction-container', className="graph-container"),
                     ]
             ),
@@ -125,15 +127,35 @@ def update_and_prediction_stock(n_clicks, stock_input, year1_slider, year2_slide
     data.reset_index(inplace=True)
     
     if start_date > end_date:
-        return [html.Label("Invalid date range... Start date should be earlier than end date.", id="error_message", style={'font-weight': 'bold'})], None
+        return [html.Label("Invalid date range... Start date should be earlier than end date!", id="error_message", style={
+            'width': '30%',
+            'color': 'rgba(223, 223, 223)',
+            'background-color': 'rgba(26, 24, 25)',
+            'border': '2px solid rgba(87, 86, 87)',
+            'border-radius': '5px',
+            'margin': 'auto'
+            })], None
     
     if data.empty:
-        return [html.Label("Invalid ticker... Please try again!", id="error_message", style={'font-weight': 'bold'})], None
+        return [html.Label("Invalid ticker... Please try again!", id="error_message", style={
+            'width': '20%',
+            'color': 'rgba(223, 223, 223)',
+            'background-color': 'rgba(26, 24, 25)',
+            'border': '2px solid rgba(87, 86, 87)',
+            'border-radius': '5px',
+            'margin': 'auto'
+        })], None
     
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=data.Date, y=data.Close, name='Close', mode='lines'))
     fig.add_trace(go.Scatter(x=data.Date, y=data.Open, name='Open', mode='lines'))
-    fig.update_layout(title_text='{} Current Stock Price'.format(stock_input), xaxis=dict(title="Date"), yaxis=dict(title="Stock Price"))
+    fig.update_layout(
+        title_text='{} Selected Stock Price'.format(stock_input), 
+        xaxis=dict(title="Date"), yaxis=dict(title="Stock Price"), 
+        plot_bgcolor='rgb(223, 223, 223)',
+        paper_bgcolor='rgb(18, 18, 18)',
+        font=dict(color='rgb(223, 223, 223)')
+    )
 
     company_data = data[["Date", "Close"]]
     company_data.columns = ["ds", "y"]
@@ -147,10 +169,16 @@ def update_and_prediction_stock(n_clicks, stock_input, year1_slider, year2_slide
     prediction_fig = go.Figure()
     prediction_fig.add_trace(go.Scatter(x=company_predictions['ds'], y=company_predictions['yhat'], name='Prediction', mode='lines'))
     prediction_fig.add_trace(go.Scatter(x=company_data['ds'], y=company_data['y'], name='Actual', mode='lines'))
-    prediction_fig.update_layout(title_text='{} Stock Price Prediction'.format(stock_input), xaxis=dict(title="Date"), yaxis=dict(title="Stock Price"))
+    prediction_fig.update_layout(
+    title_text='{} Stock Price Prediction'.format(stock_input),
+    xaxis=dict(title="Date"),
+    yaxis=dict(title="Stock Price"),
+    plot_bgcolor='rgb(223, 223, 223)',
+    paper_bgcolor='rgb(18, 18, 18)',
+    font=dict(color='rgb(223, 223, 223)')
+    )
 
-    return dcc.Graph(figure=fig, style={'marginTop': '25px'}), dcc.Graph(figure=prediction_fig)
-
+    return dcc.Graph(figure=fig), dcc.Graph(figure=prediction_fig)
 
 if __name__ == "__main__":
     app.run_server(debug=True)
