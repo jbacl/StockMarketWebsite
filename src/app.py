@@ -135,7 +135,7 @@ def update_and_prediction_stock(n_clicks, stock_input, year1_input, year2_input)
     
     date_pattern = r'^\d{4}-\d{2}-\d{2}$'
     if not re.match(date_pattern, year1_input) or not re.match(date_pattern, year2_input):
-        return [html.Label("Invalid date format... date should be in YYYY-MM-DD format!", id="error_message", style={
+        return [html.Label("Invalid date format... Date should be in YYYY-MM-DD format.", id="error_message", style={
             'width': '30%',
             'color': 'rgba(223, 223, 223)',
             'background-color': 'rgba(26, 24, 25)',
@@ -145,8 +145,8 @@ def update_and_prediction_stock(n_clicks, stock_input, year1_input, year2_input)
             })], None
     
     if start_date > end_date:
-        return [html.Label("Invalid date range... Start date should be earlier than end date!", id="error_message", style={
-            'width': '30%',
+        return [html.Label("Invalid Date Range... Start date should be earlier than end date.", id="error_message", style={
+            'width': '30%', 
             'color': 'rgba(223, 223, 223)',
             'background-color': 'rgba(26, 24, 25)',
             'border': '2px solid rgba(87, 86, 87)',
@@ -158,7 +158,7 @@ def update_and_prediction_stock(n_clicks, stock_input, year1_input, year2_input)
     data.reset_index(inplace=True)
     
     if data.empty:
-        return [html.Label("Invalid ticker... Please try again!", id="error_message", style={
+        return [html.Label("Invalid Ticker... Please try again.", id="error_message", style={
             'width': '20%',
             'color': 'rgba(223, 223, 223)',
             'background-color': 'rgba(26, 24, 25)',
