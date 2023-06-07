@@ -1,0 +1,9 @@
+dash==2.10.2
+dash_bootstrap_components==1.4.1
+numpy==1.23.5
+pandas==2.0.2
+plotly==5.14.1
+prophet==1.1.4
+yfinance==0.2.18
+gunicorn
+dash-tools
