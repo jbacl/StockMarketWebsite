@@ -46,12 +46,13 @@ html, body {
     display: flex;
     justify-content: space-between;
     margin-bottom: 20px;
-    width: auto;
+    width: 100%;
   }
   
   .date-input {
     flex: 1;
-    margin-right: 10px;
+    margin-right: 15px;
+    margin-left: 15px;
     width: 100%;
   }
   
@@ -65,8 +66,9 @@ html, body {
     font-weight: 600;
     line-height: 38px;
     border: 1px solid #bbb;
-    padding: 5px 10px;
+    padding: auto;
     width: 100%;
+    border: 1px solid #bbb;
   }
   
   .search-button {
