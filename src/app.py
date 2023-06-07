@@ -133,9 +133,6 @@ def update_and_prediction_stock(n_clicks, stock_input, year1_input, year2_input)
     start_date = year1_input
     end_date = year2_input
     
-    data = yf.download(stock_input, start_date, end_date)
-    data.reset_index(inplace=True)
-    
     date_pattern = r'^\d{4}-\d{2}-\d{2}$'
     if not re.match(date_pattern, year1_input) or not re.match(date_pattern, year2_input):
         return [html.Label("Invalid date format... date should be in YYYY-MM-DD format!", id="error_message", style={
@@ -149,13 +146,16 @@ def update_and_prediction_stock(n_clicks, stock_input, year1_input, year2_input)
     
     if start_date > end_date:
         return [html.Label("Invalid date range... Start date should be earlier than end date!", id="error_message", style={
-            'width': '5%',
+            'width': '30%',
             'color': 'rgba(223, 223, 223)',
             'background-color': 'rgba(26, 24, 25)',
             'border': '2px solid rgba(87, 86, 87)',
             'border-radius': '5px',
             'margin': 'auto'
             })], None
+
+    data = yf.download(stock_input, start_date, end_date)
+    data.reset_index(inplace=True)
     
     if data.empty:
         return [html.Label("Invalid ticker... Please try again!", id="error_message", style={
