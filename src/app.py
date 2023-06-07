@@ -11,6 +11,8 @@ from plotly import graph_objs as go
 
 import datetime as dt
 
+import re
+
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css', '/assets/style.css', dbc.icons.FONT_AWESOME, dbc.icons.BOOTSTRAP]
 
 app = Dash(__name__, external_stylesheets=external_stylesheets)
@@ -44,7 +46,7 @@ app.layout = html.Div(
                             children=[
                                 html.H4('Start Date', className="date"),
                                 dcc.Input(
-                                    id="year1_slider",
+                                    id="year1_input",
                                     value='',
                                     type='text',
                                     placeholder='YYYY-MM-DD',
@@ -57,7 +59,7 @@ app.layout = html.Div(
                             children=[
                                 html.H4('End Date', className="date"),
                                 dcc.Input(
-                                    id="year2_slider",
+                                    id="year2_input",
                                     value='',
                                     type='text',
                                     placeholder='YYYY-MM-DD',
@@ -97,7 +99,15 @@ app.layout = html.Div(
         dcc.Loading(
                     id="loading-container",
                     type="circle",
-                    style={'marginTop': '40px'},
+                    style={
+                        'marginTop': '40px',
+                        'width': '10%',
+                        'color': 'rgba(223, 223, 223)',
+                        'background-color': 'rgba(26, 24, 25)',
+                        'border': '2px solid rgba(87, 86, 87)',
+                        'border-radius': '5px',
+                        'margin': 'auto'
+                        },
                     children=[
                         html.Div(id='year-container', className="graph-container", style={'marginTop': '25px'}),
                         html.Div(id='prediction-container', className="graph-container"),
@@ -111,24 +121,35 @@ app.layout = html.Div(
     Output('prediction-container', 'children'),
     Input('button_input', 'n_clicks'),
     State('stock_input', 'value'),
-    State('year1_slider', 'value'),
-    State('year2_slider', 'value'),
+    State('year1_input', 'value'),
+    State('year2_input', 'value'),
     prevent_initial_call=True,
 )
 
-def update_and_prediction_stock(n_clicks, stock_input, year1_slider, year2_slider):
+def update_and_prediction_stock(n_clicks, stock_input, year1_input, year2_input):
     if n_clicks is None:
         raise exceptions.PreventUpdate
     
-    start_date = year1_slider
-    end_date = year2_slider
+    start_date = year1_input
+    end_date = year2_input
     
     data = yf.download(stock_input, start_date, end_date)
     data.reset_index(inplace=True)
     
+    date_pattern = r'^\d{4}-\d{2}-\d{2}$'
+    if not re.match(date_pattern, year1_input) or not re.match(date_pattern, year2_input):
+        return [html.Label("Invalid date format... date should be in YYYY-MM-DD format!", id="error_message", style={
+            'width': '30%',
+            'color': 'rgba(223, 223, 223)',
+            'background-color': 'rgba(26, 24, 25)',
+            'border': '2px solid rgba(87, 86, 87)',
+            'border-radius': '5px',
+            'margin': 'auto'
+            })], None
+    
     if start_date > end_date:
         return [html.Label("Invalid date range... Start date should be earlier than end date!", id="error_message", style={
-            'width': '30%',
+            'width': '5%',
             'color': 'rgba(223, 223, 223)',
             'background-color': 'rgba(26, 24, 25)',
             'border': '2px solid rgba(87, 86, 87)',
@@ -144,12 +165,12 @@ def update_and_prediction_stock(n_clicks, stock_input, year1_slider, year2_slide
             'border': '2px solid rgba(87, 86, 87)',
             'border-radius': '5px',
             'margin': 'auto'
-        })], None
+            })], None
     
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=data.Date, y=data.Close, name='Close', mode='lines'))
-    fig.add_trace(go.Scatter(x=data.Date, y=data.Open, name='Open', mode='lines'))
-    fig.update_layout(
+    selected_fig = go.Figure()
+    selected_fig.add_trace(go.Scatter(x=data.Date, y=data.Close, name='Close', mode='lines'))
+    selected_fig.add_trace(go.Scatter(x=data.Date, y=data.Open, name='Open', mode='lines'))
+    selected_fig.update_layout(
         title_text='{} Selected Stock Price'.format(stock_input), 
         xaxis=dict(title="Date"), yaxis=dict(title="Stock Price"), 
         plot_bgcolor='rgb(223, 223, 223)',
@@ -178,7 +199,7 @@ def update_and_prediction_stock(n_clicks, stock_input, year1_slider, year2_slide
     font=dict(color='rgb(223, 223, 223)')
     )
 
-    return dcc.Graph(figure=fig), dcc.Graph(figure=prediction_fig)
+    return dcc.Graph(figure=selected_fig), dcc.Graph(figure=prediction_fig)
 
 if __name__ == "__main__":
     app.run_server(debug=True)
